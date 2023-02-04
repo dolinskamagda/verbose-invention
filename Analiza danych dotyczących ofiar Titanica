@@ -1,0 +1,164 @@
+#Przedstawienie danych w postaci tabeli.#
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import math
+
+df = pd.read_csv(r"train.csv") 
+
+df.set_index('PassengerId') 
+print(df)
+
+#Histogram wieku ofiar#
+
+df2=df.where(df.Survived == 0)
+x = df2['Age'].plot(kind='hist', bins=20, color='blue') 
+
+x.set_ylabel("Liczba ofiar")
+x.set_xlabel("Wiek ofiary")
+
+plt.show()
+
+##Co mogło mieć wpływ na przeżycie pasażerów (płeć, wiek, status społeczny na podstawie klasy biletu)
+
+Wpływ faktycznie mogła mieć płeć, patrząc na liczbę wszystkich ocalonych, 68% z nich to kobiety a zaledwie 32% to mężczyźni.
+Niewątpliwie, wpływ miał również status społeczny, w I klasie 136 osób przeżyło 63%, 80 osób nie przeżyło 37%. W II klasie 
+87 przeżyło 47%, 97 nie przeżyło 53%. W III klasie 120 przeżyło 24%, 373 nie przeżyło 76%. Różnice są diametralne, niewątpliwie 
+osoby podróżujące III klasą miały dużo mniejsze szanse na przeżycie niż osoby wyżej społecznie usytuowane, podróżujące w I klasie.
+Wpływu możemy również doszukiwać się w wieku pasażerów, do 20 roku życia 45% przeżyło, od 20 roku życia do 35 roku życia 40%,
+od 35 roku do 80 roku 38%. Wiek nie miał zatem aż takiego wielkiego znaczenia jak status społeczny. Co prawda, osoby starsze miały mniejsze
+szanse na przeżycie, ale nie było to zapewne aż tak wpływowe.##
+
+
+#Program z interfejsem konsolowym (CLI) do eksploracji wczytanego pliku w danymi#
+
+def getNames():
+    for index, row in df.iterrows():
+        print(row["Name"])
+    print("\n")
+    main()
+
+def getVictimsNames():
+    df3 = df
+    df3 = df3.loc[df3['Survived']==0]
+    for index, row in df3.iterrows():
+        print(row["Name"])
+    
+    print("\n")
+    main()
+
+def ticketclassStats():
+    x = df['Pclass'].plot(kind='hist', bins=5, color='red') 
+    x.set_ylabel("Liczba osób")
+    x.set_xlabel("Klasa biletu")
+    new_list = range(math.floor(min(df['Pclass'])), math.ceil(max(df['Pclass']))+1)
+    plt.xticks(new_list)
+    plt.show()
+    print("\n")
+    main()
+    
+def ticketsPrices():
+    print("Ticket  |  Fare")
+    for index, row in df.iterrows():
+        print(row["Ticket"]+" | "+str(row["Fare"]))
+    print("\n")
+    main()
+    
+def sexStats():
+    print("\nLiczba kobiet: "+str(len(df.loc[df['Sex']== "female"])))
+    print("\nLiczba mężczyzn: "+str(len(df.loc[df['Sex']== "male"])))
+    
+    print("\n")
+    main()
+
+def embarkationportList():
+    print("Porty zaokrętowania: C = Cherbourg, Q = Queenstown, S = Southampton")
+    m = input("Wybierz port wpisując literę: ")
+    if (m == "C"):
+        df3 = df.loc[df["Embarked"]== "C"]
+        print("\nPort Cherbourg:\n")
+        for index, row in df3.iterrows():
+            print(row["Name"]+" | "+row["Embarked"])
+    
+    elif (m == "Q"):
+        df3 = df.loc[df["Embarked"]== "Q"]
+        print("\nPort Queenstown:\n")
+        for index, row in df3.iterrows():
+            print(row["Name"]+" | "+row["Embarked"])
+        
+    elif (m == "S"):
+        df3 = df.loc[df["Embarked"]== "S"]
+        print("\nPort Southampton:\n")
+        for index, row in df3.iterrows():
+            print(row["Name"]+" | "+row["Embarked"])
+    
+    else:
+        print("Nie ma takiego portu. ")
+    
+    print("\n")
+    main()
+    
+def getData():
+    print("\nWidoki danych: \n1.Lista \n2.Tabela")
+    n=input("Wybierz opcję wpisując cyfrę: ")
+    if (n == "1"):
+        for index, row in df.iterrows(): 
+            print("\nPassengerID: " + str(row["PassengerId"]))
+            print("Survived: " + str(row["Survived"]))
+            print("Pclass: " + str(row["Pclass"]))
+            print("Name: " + row["Name"])
+            print("Sex: " + row["Sex"])
+            print("Age: " + str(row["Age"]))
+            print("SibSp: " + str(row["SibSp"]))
+            print("Parch: " + str(row["Parch"]))
+            print("Ticket: " + str(row["Ticket"]))
+            print("Fare: " + str(row["Fare"]))
+            print("Cabin: " + str(row["Cabin"]))
+            print("Embarked: " + str(row["Embarked"]))
+    
+    elif (n == "2"):
+        print("\nPassengerId | Survived | Pclass | Name | Sex | Age | SibSp | Parch | Ticket | Fare | Cabin | Embarked\n")
+        for index, row in df.iterrows():
+            print(f"{row['PassengerId']} | {row['Survived']} | {row['Pclass']} | {row['Name']} | {row['Sex']} ",end="")
+            print(f"| {row['Age']} | {row['SibSp']} | {row['Parch']} | {row['Ticket']} | {row['Fare']} | {row['Cabin']} | {row['Embarked']}")
+        
+    
+    else:
+        print("Nie ma takiego widoku danych. ")
+    
+    print("\n")
+    main()
+
+def main():
+    print("Dane katastrofy Titanica")
+    print("1. Imiona wszystkich pasażerów")
+    print("2. Imiona ofiar")
+    print("3. Statystyki liczby pasażerów wg klas biletów")
+    print("4. Wszystkie bilety wraz z ceną")
+    print("5. Liczba pasażerów wg płci")
+    print("6. Lista pasażerów z wybranego portu zaokrętowania")
+    print("7. Wypisz wszystkie dane")
+    print("0. Zakończ program")
+    p= input("Wybierz opcję wpisując cyfrę: ")
+    
+    if(p=="0"):
+        print("Zamykam program...")
+    elif(p=="1"):
+        getNames()
+    elif(p=="2"):
+        getVictimsNames()
+    elif(p=="3"):
+        ticketclassStats()
+    elif(p=="4"):
+        ticketsPrices()
+    elif(p=="5"):
+        sexStats()
+    elif(p=="6"):
+        embarkationportList()
+    elif(p=="7"):
+        getData()
+    else:
+        print("Nie znaleziono podanej opcji\n\n")
+        main()
+
+main()
